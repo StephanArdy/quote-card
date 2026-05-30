@@ -28,6 +28,7 @@ function getBaseColors(theme: Variants["theme"]) {
       foreground: "#0b0c10",
       muted: "rgba(11 12 16 / 0.68)",
       border: "rgba(11 12 16 / 0.10)",
+      inner: "rgba(255 255 255 / 0.65)",
     };
   }
 
@@ -36,10 +37,15 @@ function getBaseColors(theme: Variants["theme"]) {
     foreground: "#f6f7fb",
     muted: "rgba(246 247 251 / 0.70)",
     border: "rgba(246 247 251 / 0.12)",
+    inner: "rgba(255 255 255 / 0.08)",
   };
 }
 
-function getBackgroundImage(bg: Variants["bg"], theme: Variants["theme"], rgb: string) {
+function getBackgroundImage(
+  bg: Variants["bg"],
+  theme: Variants["theme"],
+  rgb: string,
+) {
   const light = theme === "light";
   const highlight = light ? "255 255 255" : "255 255 255";
   const shade = light ? "0 0 0" : "0 0 0";
@@ -47,8 +53,8 @@ function getBackgroundImage(bg: Variants["bg"], theme: Variants["theme"], rgb: s
   if (bg === "gradient") {
     return [
       `radial-gradient(1200px circle at 18% 18%, ${rgba(rgb, 0.55)}, transparent 60%)`,
-      `radial-gradient(1000px circle at 82% 82%, ${rgba(highlight, light ? 0.55 : 0.10)}, transparent 65%)`,
-      `linear-gradient(180deg, ${rgba(highlight, light ? 0.20 : 0.06)}, ${rgba(shade, light ? 0.08 : 0.26)})`,
+      `radial-gradient(1000px circle at 82% 82%, ${rgba(highlight, light ? 0.55 : 0.1)}, transparent 65%)`,
+      `linear-gradient(180deg, ${rgba(highlight, light ? 0.2 : 0.06)}, ${rgba(shade, light ? 0.08 : 0.26)})`,
     ].join(", ");
   }
 
@@ -62,9 +68,9 @@ function getBackgroundImage(bg: Variants["bg"], theme: Variants["theme"], rgb: s
 
   return [
     `radial-gradient(900px circle at 15% 12%, ${rgba(rgb, 0.45)}, transparent 60%)`,
-    `radial-gradient(850px circle at 88% 18%, ${rgba(highlight, light ? 0.50 : 0.10)}, transparent 62%)`,
+    `radial-gradient(850px circle at 88% 18%, ${rgba(highlight, light ? 0.5 : 0.1)}, transparent 62%)`,
     `radial-gradient(1100px circle at 50% 90%, ${rgba(rgb, 0.22)}, transparent 58%)`,
-    `linear-gradient(180deg, ${rgba(highlight, light ? 0.18 : 0.05)}, ${rgba(shade, light ? 0.08 : 0.30)})`,
+    `linear-gradient(180deg, ${rgba(highlight, light ? 0.18 : 0.05)}, ${rgba(shade, light ? 0.08 : 0.3)})`,
   ].join(", ");
 }
 
@@ -83,16 +89,22 @@ export function QuoteCard({
       padding: "p-20",
       quoteText: "text-6xl",
       authorText: "text-2xl",
+      quoteMax: "max-w-[860px]",
+      mark: "text-[128px]",
     },
     "16x9": {
       padding: "p-16",
       quoteText: "text-5xl",
       authorText: "text-xl",
+      quoteMax: "max-w-[980px]",
+      mark: "text-[96px]",
     },
     "9x16": {
       padding: "p-24",
       quoteText: "text-7xl",
       authorText: "text-2xl",
+      quoteMax: "max-w-[920px]",
+      mark: "text-[148px]",
     },
   }[variants.ratio];
 
@@ -103,7 +115,10 @@ export function QuoteCard({
 
   return (
     <div
-      className={cn("relative overflow-hidden", className)}
+      className={cn(
+        "relative overflow-hidden rounded-[36px] ring-1 ring-white/10",
+        className,
+      )}
       style={{
         width,
         height,
@@ -116,6 +131,13 @@ export function QuoteCard({
         ),
       }}
     >
+      <div
+        className="absolute inset-0"
+        style={{
+          boxShadow: `inset 0 0 0 1px ${colors.border}, inset 0 1px 0 0 ${colors.inner}`,
+        }}
+      />
+
       <div
         className="absolute inset-0"
         style={{
@@ -144,19 +166,50 @@ export function QuoteCard({
         />
       ) : null}
 
-      <div className={cn("relative flex h-full w-full flex-col justify-between", layout.padding)}>
-        <div className={cn("flex w-full flex-col gap-6", alignClass)}>
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "radial-gradient(800px circle at 50% 110%, rgba(0 0 0 / 0.55), transparent 55%)",
+          opacity: variants.theme === "light" ? 0.22 : 0.38,
+        }}
+      />
+
+      <div
+        className={cn(
+          "relative flex h-full w-full flex-col justify-between",
+          layout.padding,
+        )}
+      >
+        <div className={cn("relative flex w-full flex-col gap-6", alignClass)}>
           <div
             className={cn(
-              "font-semibold leading-[1.05] tracking-tight",
+              "pointer-events-none absolute -top-10 select-none font-semibold leading-none tracking-[-0.06em]",
+              layout.mark,
+              variants.align === "center"
+                ? "left-1/2 -translate-x-1/2"
+                : "left-0",
+            )}
+            style={{
+              color: colors.muted,
+              opacity: variants.theme === "light" ? 0.35 : 0.26,
+            }}
+          >
+            “
+          </div>
+          <div
+            className={cn(
+              "font-semibold leading-[1.02] tracking-tight",
               layout.quoteText,
+              layout.quoteMax,
             )}
           >
-            <span style={{ color: colors.muted }}>“</span>
             {quote.quote}
-            <span style={{ color: colors.muted }}>”</span>
           </div>
-          <div className={cn("font-medium", layout.authorText)} style={{ color: colors.muted }}>
+          <div
+            className={cn("font-medium", layout.authorText)}
+            style={{ color: colors.muted }}
+          >
             — {quote.author}
           </div>
         </div>

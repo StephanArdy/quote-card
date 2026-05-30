@@ -20,16 +20,16 @@ export default async function RenderPage({ params, searchParams }: PageProps) {
   const size = getCanvasSize(variants.ratio);
 
   return (
-    <main
-      style={{ width: size.width, height: size.height }}
-      className="overflow-hidden"
-    >
-      <QuoteCard
-        quote={quote}
-        variants={variants}
-        width={size.width}
-        height={size.height}
-      />
-    </main>
+    <>
+      <style>{`html, body { width: ${size.width}px; height: ${size.height}px; overflow: hidden; }`}</style>
+      <main style={{ width: size.width, height: size.height }}>
+        <QuoteCard
+          quote={quote}
+          variants={variants}
+          width={size.width}
+          height={size.height}
+        />
+      </main>
+    </>
   );
 }
